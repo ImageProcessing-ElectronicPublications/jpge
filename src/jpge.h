@@ -19,7 +19,8 @@
 #ifndef JPEG_ENCODER_H
 #define JPEG_ENCODER_H
 
-namespace jpge {
+namespace jpge
+{
 typedef unsigned char  uint8;
 typedef signed short   int16;
 typedef signed int     int32;
@@ -27,11 +28,13 @@ typedef unsigned short uint16;
 typedef unsigned int   uint32;
 typedef unsigned int   uint;
 
-struct rgb {
+struct rgb
+{
     uint8 r,g,b;
 };
 
-struct rgba {
+struct rgba
+{
     uint8 r,g,b,a;
 };
 
@@ -42,15 +45,18 @@ typedef int16 dctq_t; // quantized
 enum subsampling_t { Y_ONLY = 0, H1V1 = 1, H2V1 = 2, H2V2 = 3 };
 
 // JPEG compression parameters structure.
-struct params {
+struct params
+{
     inline params() : m_quality(85), m_subsampling(H2V2), m_no_chroma_discrim_flag(false) { }
 
     inline bool check() const
     {
-        if ((m_quality < 1) || (m_quality > 100)) {
+        if ((m_quality < 1) || (m_quality > 100))
+        {
             return false;
         }
-        if ((uint)m_subsampling > (uint)H2V2) {
+        if ((uint)m_subsampling > (uint)H2V2)
+        {
             return false;
         }
         return true;
@@ -82,18 +88,21 @@ bool compress_image_to_jpeg_file_in_memory(void *pBuf, int &buf_size, int width,
 
 // Output stream abstract class - used by the jpeg_encoder class to write to the output stream.
 // put_buf() is generally called with len==JPGE_OUT_BUF_SIZE bytes, but for headers it'll be called with smaller amounts.
-class output_stream {
+class output_stream
+{
 public:
     virtual ~output_stream() { };
     virtual bool put_buf(const void *Pbuf, int len) = 0;
-    template<class T> inline bool put_obj(const T &obj) {
+    template<class T> inline bool put_obj(const T &obj)
+    {
         return put_buf(&obj, sizeof(T));
     }
 };
 
 bool compress_image_to_stream(output_stream &dst_stream, int width, int height, int num_channels, const uint8 *pImage_data, const params &comp_params);
 
-class huffman_table {
+class huffman_table
+{
 public:
     uint m_codes[256];
     uint8 m_code_sizes[256];
@@ -105,18 +114,21 @@ public:
     void compute();
 };
 
-class component {
+class component
+{
 public:
     uint8 m_h_samp, m_v_samp;
     int m_last_dc_val;
 };
 
-struct huffman_dcac {
+struct huffman_dcac
+{
     int32 m_quantization_table[64];
     huffman_table dc,ac;
 };
 
-class image {
+class image
+{
 public:
     void init();
     void deinit();
@@ -140,7 +152,8 @@ private:
 };
 
 // Lower level jpeg_encoder class - useful if more control is needed than the above helper functions.
-class jpeg_encoder {
+class jpeg_encoder
+{
 public:
     jpeg_encoder();
     ~jpeg_encoder();
@@ -152,7 +165,8 @@ public:
     // Returns false on out of memory or if a stream write fails.
     bool init(output_stream *pStream, int width, int height, const params &comp_params = params());
 
-    const params &get_params() const {
+    const params &get_params() const
+    {
         return m_params;
     }
 

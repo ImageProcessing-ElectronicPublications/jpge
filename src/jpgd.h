@@ -15,7 +15,8 @@
 #define JPGD_NORETURN
 #endif
 
-namespace jpgd {
+namespace jpgd
+{
 typedef unsigned char  uint8;
 typedef   signed short int16;
 typedef unsigned short uint16;
@@ -31,7 +32,8 @@ unsigned char *decompress_jpeg_image_from_memory(const unsigned char *pSrc_data,
 unsigned char *decompress_jpeg_image_from_file(const char *pSrc_filename, int *width, int *height, int *actual_comps, int req_comps);
 
 // Success/failure error codes.
-enum jpgd_status {
+enum jpgd_status
+{
     JPGD_SUCCESS = 0, JPGD_FAILED = -1, JPGD_DONE = 1,
     JPGD_BAD_DHT_COUNTS = -256, JPGD_BAD_DHT_INDEX, JPGD_BAD_DHT_MARKER, JPGD_BAD_DQT_MARKER, JPGD_BAD_DQT_TABLE,
     JPGD_BAD_PRECISION, JPGD_BAD_HEIGHT, JPGD_BAD_WIDTH, JPGD_TOO_MANY_COMPONENTS,
@@ -48,7 +50,8 @@ enum jpgd_status {
 // The decoder is rather greedy: it will keep on calling this method until its internal input buffer is full, or until the EOF flag is set.
 // It the input stream contains data after the JPEG stream's EOI (end of image) marker it will probably be pulled into the internal buffer.
 // Call the get_total_bytes_read() method to determine the actual size of the JPEG stream after successful decoding.
-class jpeg_decoder_stream {
+class jpeg_decoder_stream
+{
 public:
     jpeg_decoder_stream() { }
     virtual ~jpeg_decoder_stream() { }
@@ -64,7 +67,8 @@ public:
 };
 
 // stdio FILE stream class.
-class jpeg_decoder_file_stream : public jpeg_decoder_stream {
+class jpeg_decoder_file_stream : public jpeg_decoder_stream
+{
     jpeg_decoder_file_stream(const jpeg_decoder_file_stream &);
     jpeg_decoder_file_stream &operator =(const jpeg_decoder_file_stream &);
 
@@ -82,7 +86,8 @@ public:
 };
 
 // Memory stream class.
-class jpeg_decoder_mem_stream : public jpeg_decoder_stream {
+class jpeg_decoder_mem_stream : public jpeg_decoder_stream
+{
     const uint8 *m_pSrc_data;
     uint m_ofs, m_size;
 
@@ -93,7 +98,8 @@ public:
     virtual ~jpeg_decoder_mem_stream() { }
 
     bool open(const uint8 *pSrc_data, uint size);
-    void close() {
+    void close()
+    {
         m_pSrc_data = NULL;
         m_ofs = 0;
         m_size = 0;
@@ -105,7 +111,8 @@ public:
 // Loads JPEG file from a jpeg_decoder_stream.
 unsigned char *decompress_jpeg_image_from_stream(jpeg_decoder_stream *pStream, int *width, int *height, int *actual_comps, int req_comps);
 
-enum {
+enum
+{
     JPGD_IN_BUF_SIZE = 8192, JPGD_MAX_BLOCKS_PER_MCU = 10, JPGD_MAX_HUFF_TABLES = 8, JPGD_MAX_QUANT_TABLES = 4,
     JPGD_MAX_COMPONENTS = 4, JPGD_MAX_COMPS_IN_SCAN = 4, JPGD_MAX_BLOCKS_PER_ROW = 8192, JPGD_MAX_HEIGHT = 16384, JPGD_MAX_WIDTH = 16384
 };
@@ -113,7 +120,8 @@ enum {
 typedef int16 jpgd_quant_t;
 typedef int16 jpgd_block_t;
 
-class jpeg_decoder {
+class jpeg_decoder
+{
 public:
     // Call get_error_code() after constructing to determine if the stream is valid or not. You may call the get_width(), get_height(), etc.
     // methods after the constructor is called. You may then either destruct the object, or begin decoding the image by calling begin_decoding(), then decode() on each scanline.
@@ -133,30 +141,37 @@ public:
     // Returns JPGD_FAILED if an error occurred. Call get_error_code() for a more info.
     int decode(const void **pScan_line, uint *pScan_line_len);
 
-    inline jpgd_status get_error_code() const {
+    inline jpgd_status get_error_code() const
+    {
         return m_error_code;
     }
 
-    inline int get_width() const {
+    inline int get_width() const
+    {
         return m_image_x_size;
     }
-    inline int get_height() const {
+    inline int get_height() const
+    {
         return m_image_y_size;
     }
 
-    inline int get_num_components() const {
+    inline int get_num_components() const
+    {
         return m_comps_in_frame;
     }
 
-    inline int get_bytes_per_pixel() const {
+    inline int get_bytes_per_pixel() const
+    {
         return m_dest_bytes_per_pixel;
     }
-    inline int get_bytes_per_scan_line() const {
+    inline int get_bytes_per_scan_line() const
+    {
         return m_image_x_size * get_bytes_per_pixel();
     }
 
     // Returns the total number of bytes actually consumed by the decoder (which should equal the actual size of the JPEG file).
-    inline int get_total_bytes_read() const {
+    inline int get_total_bytes_read() const
+    {
         return m_total_bytes_read;
     }
 
@@ -166,7 +181,8 @@ private:
 
     typedef void (*pDecode_block_func)(jpeg_decoder *, int, int, int);
 
-    struct huff_tables {
+    struct huff_tables
+    {
         bool ac_table;
         uint  look_up[256];
         uint  look_up2[256];
@@ -174,14 +190,16 @@ private:
         uint  tree[512];
     };
 
-    struct coeff_buf {
+    struct coeff_buf
+    {
         uint8 *pData;
         int block_num_x, block_num_y;
         int block_len_x, block_len_y;
         int block_size;
     };
 
-    struct mem_block {
+    struct mem_block
+    {
         mem_block *m_pNext;
         size_t m_used_count;
         size_t m_size;
